@@ -39,11 +39,13 @@ namespace Databases
             try
             {
                 // TODO: Set up database path using Application.persistentDataPath
-                _databasePath = "";
+                _databasePath = Path.Combine(Application.persistentDataPath, databaseName);
                 
                 // TODO: Create SQLite connection
+                _database = new SQLiteConnection(_databasePath);
 
                 // TODO: Create tables for game data
+                _database.CreateTable<HighScore>();
 
                 Debug.Log($"Database initialized at: {_databasePath}");
             }
@@ -61,7 +63,10 @@ namespace Databases
             try
             {
                 // TODO: Create a new HighScore object
+                var highScore = new HighScore(playerName, score, levelName);
+                
                 // TODO: Insert it into the database using _database.Insert()
+                _database.Insert(highScore);
                 
                 Debug.Log($"High score added: {playerName} - {score} points");
             }
@@ -77,8 +82,7 @@ namespace Databases
             try
             {
                 // TODO: Query the database for top scores
-                
-                return new List<HighScore>(); // Placeholder - students will replace this
+                return _database.Table<HighScore>().OrderByDescending(hs => hs.Score).Take(limit).ToList();
             }
             catch (Exception ex)
             {
@@ -88,13 +92,12 @@ namespace Databases
         }
         
         /// TODO: Students will implement this method
-        public List<HighScore> GetHighScoresForLevel(string levelName, int limit = 10)
+        public List<HighScore> GetHighScoresForLevel(string levelName="Default", int limit = 10)
         {
             try
             {
                 // TODO: Query the database for scores filtered by level
-                
-                return new List<HighScore>(); // Placeholder - students will replace this
+                return _database.Table<HighScore>().Where(hs => hs.LevelName == levelName).Take(limit).ToList();
             }
             catch (Exception ex)
             {
@@ -113,8 +116,7 @@ namespace Databases
             try
             {
                 // TODO: Count the total number of high scores
-                
-                return 0; // Placeholder - students will replace this
+                return _database.Table<HighScore>().Count();
             }
             catch (Exception ex)
             {
@@ -129,7 +131,7 @@ namespace Databases
             try
             {
                 // TODO: Delete all high scores from the database
-                
+                _database.DeleteAll<HighScore>();
                 Debug.Log("All high scores cleared");
             }
             catch (Exception ex)
