@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.Networking;
 using System.Threading.Tasks;
-using System;
 using Newtonsoft.Json;
 using WeatherApp.Data;
 using WeatherApp.Config;
@@ -55,8 +54,8 @@ namespace WeatherApp.Services
                     case UnityWebRequest.Result.Success:
                         // TODO: Parse JSON response using Newtonsoft.Json
                         // TODO: Return the parsed WeatherData object
-                        Debug.Log(".... got request result ");
-                        return null;
+                        // Debug.Log(request.downloadHandler.text);
+                        return ParseWeatherData(request.downloadHandler.text);
                     case UnityWebRequest.Result.ConnectionError:
                         Debug.LogError("Connection error: " + request.error);
                         break;
@@ -68,10 +67,29 @@ namespace WeatherApp.Services
                         break;
                 }
                 
-                return null; // Placeholder - students will replace this
+                return null;
             }
         }
         
+        private WeatherData ParseWeatherData(string jsonString)
+        {
+            try
+            {
+                var settings = new JsonSerializerSettings
+                {
+                    MissingMemberHandling = MissingMemberHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+        
+                return JsonConvert.DeserializeObject<WeatherData>(jsonString, settings);
+            }
+            catch (JsonException exception)
+            {
+                Debug.LogError("JSON parsing error: " + exception.Message);
+                return null;
+            }
+        }
+
         /// <summary>
         /// Example usage method - students can use this as reference
         /// </summary>
