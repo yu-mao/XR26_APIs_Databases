@@ -40,19 +40,33 @@ namespace WeatherApp.Services
             }
             
             // TODO: Build the complete URL with city and API key
-            string url = $"";
+            string url = $"{baseUrl}?q={city}&&appid={ApiConfig.OpenWeatherMapApiKey}";
             
             // TODO: Create UnityWebRequest and use modern async pattern
             using (UnityWebRequest request = UnityWebRequest.Get(url))
             {
                 // TODO: Use async/await, send the request and wait for response
+                await request.SendWebRequest();
                 
                 // TODO: Implement proper error handling for different result types
                 // Check request.result for Success, ConnectionError, ProtocolError, DataProcessingError
-                
-                // TODO: Parse JSON response using Newtonsoft.Json
-                
-                // TODO: Return the parsed WeatherData object
+                switch (request.result)
+                {
+                    case UnityWebRequest.Result.Success:
+                        // TODO: Parse JSON response using Newtonsoft.Json
+                        // TODO: Return the parsed WeatherData object
+                        Debug.Log(".... got request result ");
+                        return null;
+                    case UnityWebRequest.Result.ConnectionError:
+                        Debug.LogError("Connection error: " + request.error);
+                        break;
+                    case UnityWebRequest.Result.ProtocolError:
+                        Debug.LogError("Protocol error " + request.responseCode + ": " + request.error);
+                        break;
+                    case UnityWebRequest.Result.DataProcessingError:
+                        Debug.LogError("Data processing error: " + request.error);
+                        break;
+                }
                 
                 return null; // Placeholder - students will replace this
             }
