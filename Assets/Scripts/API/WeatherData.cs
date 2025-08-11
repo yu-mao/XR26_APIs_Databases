@@ -24,6 +24,7 @@ namespace WeatherApp.Data
         
         // Helper properties for easier data access
         public float TemperatureInCelsius => Main?.Temperature - 273.15f ?? 0f;
+        public float FeelsLikeInCelsius => Main?.FeelsLike - 273.15f ?? 0f;
         public string PrimaryDescription => Weather?.Length > 0 ? Weather[0].Description : "Unknown";
         
         // Validation method
